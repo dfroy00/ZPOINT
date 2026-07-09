@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>員工回收物拍照蒐集活動 — 推廣簡報</title>
 <style>
 /* ============================================================
@@ -94,6 +94,10 @@ html,body{
   flex-direction:column;
   background:var(--paper);
   color:var(--ink);
+  /* 內容超出時該頁自己捲；桌機塞得下就不會出現捲軸 */
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 .slide.active{ display:flex; }
 
@@ -124,6 +128,8 @@ html,body{
 }
 h1.title{ font-size:var(--fs-h1); font-weight:800; line-height:1.1; color:var(--green-900); letter-spacing:.01em; }
 h2.title{ font-size:var(--fs-h2); font-weight:800; line-height:1.12; color:var(--green-900); }
+/* 標題換行時讓每行長度平均；未換行時無作用（桌機不受影響） */
+h1.title, h2.title, .cover h1, .closing h1{ text-wrap:balance; }
 .title .hl{ color:var(--green-600); }
 .title .gold{ color:var(--accent-deep); }
 .subtitle{ font-size:var(--fs-lead); color:var(--ink-soft); font-weight:500; line-height:1.4; }
@@ -436,6 +442,166 @@ ul.list.tight li{ font-size:var(--fs-note); line-height:1.4; }
   left:50%; transform:translateX(-50%); bottom:calc(var(--u)*2.6);
   font-size:var(--fs-note); font-weight:700; color:#cfe0d4; opacity:.9;
   background:rgba(14,53,34,.5); border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.6) calc(var(--u)*2);
+}
+
+/* ============================================================
+   RWD · 三層斷點
+   一律「內容驅動」而非依機型清單，因為爆版的成因是尺寸不是廠牌：
+
+     B1 尺度層 — deck 太小，放棄 16:9 letterbox 並解除 20px 字級下限
+                 觸發：寬 ≤ 900px  或  高 ≤ 520px
+     B2 堆疊層 — 只有「直式或很窄」才把並排欄位拆成單欄
+                 觸發：寬 ≤ 600px  或（寬 ≤ 900px 且非橫式）
+     B3 橫躺層 — 寬而矮（橫躺手機）：螢幕是寬的，維持並排，改壓縮高度
+                 觸發：高 ≤ 520px  且  寬 ≥ 601px
+
+   B2 / B3 互斥。橫躺手機若也套 B2，第 5 頁會變成約五個螢幕的捲動。
+   ============================================================ */
+
+/* ---------- B1 · 尺度層 ---------- */
+@media (max-width: 900px), (max-height: 520px){
+
+  :root{
+    /* --u 重新定基：原式 min(0.5625vw,1vh) 綁死 16:9，直式手機只算出 2.19px */
+    --u: clamp(3.4px, 1.15vw, 9px);
+
+    /* 字級改由 vw 驅動；原本每一項的 max(20px,…) 下限正是爆版主因 */
+    --fs-note:   clamp(13px, 3.4vw, 17px);
+    --fs-body:   clamp(15px, 3.9vw, 19px);
+    --fs-bubble: clamp(13px, 3.5vw, 17px);
+    --fs-lead:   clamp(16px, 4.4vw, 22px);
+    --fs-kicker: clamp(13px, 3.4vw, 17px);
+    --fs-h3:     clamp(17px, 4.6vw, 23px);
+    --fs-h2:     clamp(21px, 5.6vw, 30px);
+    --fs-h1:     clamp(26px, 7.4vw, 40px);
+    --fs-mega:   clamp(32px, 9.6vw, 52px);
+
+    --pad: clamp(14px, 4.4vw, 26px);
+    --gap: clamp(10px, 3vw, 18px);
+  }
+
+  .stage{ background:var(--paper); align-items:stretch; }
+  .deck{
+    width:100vw;
+    height:100vh; height:100dvh;   /* dvh：扣掉行動瀏覽器會伸縮的網址列 */
+    box-shadow:none;
+    touch-action:pan-y;            /* 縱向留給捲動，橫向手勢由 JS 接手 */
+  }
+
+  /* 底部留白讓開 HUD（翻頁鈕 / 頁碼 / 進度條） */
+  .slide,
+  .slide.mock{ padding:var(--pad) var(--pad) calc(var(--pad) + 60px); }
+
+  /* ---- 殘留的 max(20px,…) 下限逐一解除 ---- */
+  .mega .unit,
+  .sm-unit,
+  .prize-card .pn .un,
+  .statcard .sc-v .z{ font-size:clamp(13px, 3.4vw, 16px); }
+  /* 單位小字寫成 inline 的 .6em / .55em，相對縮放會連坐掉到 11px 以下 */
+  .info-flow .box .n > span{ font-size:clamp(13px, 3.4vw, 15px) !important; }
+  .bn-item{ font-size:var(--fs-note); }
+  .ph-box .pi,
+  .ai-img.pending .pi{ font-size:var(--fs-h3); }
+
+  /* ---- HUD：觸控尺寸 + 避開瀏海與 home indicator ---- */
+  .hint{ display:none; }              /* 「點畫面前進」在觸控上不成立 */
+  .nav-btn{ width:44px; height:44px; font-size:20px; }
+  .nav-btns{
+    gap:10px;
+    left:max(calc(var(--u)*2.4), env(safe-area-inset-left));
+    bottom:max(calc(var(--u)*2.6), env(safe-area-inset-bottom));
+  }
+  .indicator{
+    right:max(calc(var(--u)*2.4), env(safe-area-inset-right));
+    bottom:max(calc(var(--u)*3.4), calc(env(safe-area-inset-bottom) + 8px));
+  }
+}
+
+/* ---------- B2 · 堆疊層（直式手機 / 直式平板 / 很窄的視窗） ---------- */
+@media (max-width: 600px), (max-width: 900px) and (max-aspect-ratio: 1/1){
+
+  .body{ flex-direction:column; }
+  .cover-grid{ flex-direction:column; align-items:stretch; gap:var(--gap); }
+  /* .cover-grid 是 .slide 的直接 flex 子項，預設 shrink:1。
+     內容變高時它會先被壓縮、讓 children 溢出，而不是把高度交出去讓整頁捲動 */
+  .slide > .cover-grid{ flex:0 0 auto; }
+  /* 封面／封底用的是 .cover-grid > .col，不是 .body > .col。
+     兩者都要解掉 flex:1 1 auto，否則空間不足時欄位被壓縮，文字會溢出到圖片底下 */
+  .body > .col,
+  .cover-grid > .col{ flex:0 0 auto !important; width:100% !important; min-height:0; }
+  .cover-visual{ flex:0 0 auto !important; width:100%; height:auto !important; }
+  .cover, .closing{ padding:var(--pad); justify-content:flex-start; }
+
+  .tiers{ flex-direction:column; align-items:stretch; }
+  .tiers .tier{ min-height:0; }
+  .axes{ flex-direction:column; height:auto; }
+  .axis{ padding:calc(var(--u)*2.2); }
+  .axis .aicon svg{ width:calc(var(--u)*5); height:calc(var(--u)*5); }
+  .reject-row{ flex-direction:column; }
+  .info-flow{ flex-direction:column; padding:calc(var(--u)*2); }
+  /* 箭頭轉向朝下。必須先 align-self:center 收掉寬度——
+     否則它會被 column flex 拉成整欄寬，rotate 後變成一條蓋住標題的長條 */
+  .info-flow .arr{
+    align-self:center;
+    transform:rotate(90deg);
+    padding:calc(var(--u)*0.8) 0;
+  }
+  .flow{ flex-direction:column; }
+  .prize-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--gap); }
+  .cl-steps{ gap:calc(var(--u)*1.2); }
+
+  /* 手機模擬圖：兩支並排改成上下堆疊，並改吃自然高度 */
+  .duo{ flex-direction:column; align-items:center; height:auto; gap:var(--gap); }
+  .duo .phone-wrap{ flex:0 0 auto; width:100%; height:auto; }
+  .phone-wrap{ height:auto; }
+  .phone{
+    height:auto; aspect-ratio:auto;
+    width:min(88%, 320px);
+    margin-inline:auto;
+    border-radius:calc(var(--u)*3);
+  }
+  .chat{ overflow:visible; }
+  /* 真截圖（頁 6 / 頁 8）：解掉 inline 的 height:100%。
+     改由高度驅動並鎖在視窗高度的 56%，否則兩張直式截圖會疊出三個螢幕的捲動量 */
+  .duo .phone-wrap > img:not(.shot){
+    height:min(56vh, 520px) !important;
+    width:auto !important;
+    max-width:90%;
+    margin-inline:auto;
+  }
+
+  /* AI 圖：解掉 inline 的 height:44% 與 aspect-ratio:4/5（直式全寬會過高） */
+  .ai-img[style*="height"]{ height:auto !important; aspect-ratio:16/10; }
+  .cover-visual .ai-img{ aspect-ratio:16/11 !important; }
+}
+
+/* ---------- B2b · 直式平板：其餘照 B2 堆疊，但兩支手機圖寬度夠就並排 ---------- */
+@media (min-width: 601px) and (max-width: 900px) and (max-aspect-ratio: 1/1){
+  .duo{ flex-direction:row; align-items:flex-start; }
+  .duo .phone-wrap{ flex:1 1 0; width:auto; }
+  .phone{ width:100%; }
+  .duo .phone-wrap > img:not(.shot){
+    height:auto !important;
+    width:100% !important;
+    max-width:100%;
+  }
+}
+
+/* ---------- B3 · 橫躺層（寬而矮：橫躺手機） ---------- */
+@media (max-height: 520px) and (min-width: 601px){
+  /* 版面維持 B1 之前的並排結構，只把高度相關的量壓下來 */
+  .slide,
+  .slide.mock{ padding:calc(var(--pad)*0.7) var(--pad) calc(var(--pad)*0.7 + 46px); }
+  .body{ margin-top:calc(var(--u)*1); }
+  ul.list{ gap:calc(var(--u)*1.4); }
+  .cover-visual .ai-img{ aspect-ratio:4/3 !important; }
+  .tier.t1, .tier.t2, .tier.t3{ min-height:0; }
+}
+
+/* 觸控裝置：翻頁鈕至少 44×44（Apple / Google 的最小可點擊尺寸） */
+@media (pointer: coarse){
+  .nav-btn{ width:48px; height:48px; font-size:22px; }
+  .nav-btns{ gap:12px; }
 }
 
 /* 進場動畫（尊重 reduced-motion） */
@@ -936,9 +1102,13 @@ ul.list.tight li{ font-size:var(--fs-note); line-height:1.4; }
   var hint = document.getElementById('hint');
   document.getElementById('pageTotal').textContent = total;
 
+  // 滑鼠/觸控板 = 可 hover 的精準指標；觸控螢幕不是
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
   function show(n){
     i = Math.max(0, Math.min(total - 1, n));
     slides.forEach(function(s, idx){ s.classList.toggle('active', idx === i); });
+    slides[i].scrollTop = 0;   // 新的一頁一律從頂端開始看
     pageNow.textContent = (i + 1);
     railFill.style.width = ((i + 1) / total * 100) + '%';
   }
@@ -956,12 +1126,39 @@ ul.list.tight li{ font-size:var(--fs-note); line-height:1.4; }
   document.getElementById('nextBtn').addEventListener('click', function(e){ e.stopPropagation(); next(); });
   document.getElementById('prevBtn').addEventListener('click', function(e){ e.stopPropagation(); prev(); });
 
-  // 點畫面翻頁：左 22% 往前，其餘往後
-  document.querySelector('.stage').addEventListener('click', function(e){
-    var x = e.clientX / window.innerWidth;
-    if (x < 0.22) { prev(); } else { next(); }
+  // 點畫面翻頁：僅限滑鼠裝置。觸控螢幕上「點一下就跳頁」會干擾閱讀與捲動
+  if (finePointer) {
+    document.querySelector('.stage').addEventListener('click', function(e){
+      var x = e.clientX / window.innerWidth;
+      if (x < 0.22) { prev(); } else { next(); }
+      if (hint) { hint.style.display = 'none'; }
+    });
+  } else if (hint) {
+    hint.textContent = '左右滑動翻頁';
+  }
+
+  // 觸控：左右滑翻頁。橫向位移須大於縱向，才不會把「上下捲動」誤判成翻頁
+  var deck = document.getElementById('deck');
+  var sx = 0, sy = 0, tracking = false;
+  var SWIPE_MIN = 45;   // px：低於此距離視為點按而非滑動
+
+  deck.addEventListener('touchstart', function(e){
+    if (e.touches.length !== 1) { tracking = false; return; }
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+
+  deck.addEventListener('touchend', function(e){
+    if (!tracking) return;
+    tracking = false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - sx;
+    var dy = t.clientY - sy;
+    if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) <= Math.abs(dy)) return;
+    if (dx < 0) { next(); } else { prev(); }
     if (hint) { hint.style.display = 'none'; }
-  });
+  }, { passive: true });
 
   show(0);
 })();
