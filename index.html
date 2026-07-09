@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>員工回收物拍照蒐集活動 — 推廣簡報</title>
+<style>
+/* ============================================================
+   員工回收物拍照蒐集活動 — 會議用 16:9 HTML 簡報 · v2 · 10 頁
+   本資料夾（含 assets/）離線可開；LINE / LIFF 一律 HTML mock 或真截圖
+   文案 SSOT：docs/promo/employee_collection_intro/content_draft.md §A
+   ============================================================ */
+
+:root{
+  /* ---- 品牌色 ----
+     [佔位：品牌主色待使用者提供，目前為暫定綠] */
+  --paper:#F3EFE4;        /* 溫暖再生紙感底色 */
+  --paper-2:#EAE3D2;      /* 面板底 */
+  --paper-3:#FBF9F3;      /* 卡片白（帶暖） */
+  --ink:#17241C;          /* 主要文字（綠黑） */
+  --ink-soft:#3A4A40;     /* 次要文字 */
+  --green-900:#0E3522;
+  --green-700:#1C5A3A;    /* 品牌主綠 */
+  --green-600:#237049;
+  --green-500:#2E8B5B;
+  --green-300:#78C295;
+  --green-100:#DCEDE2;
+  --accent:#E3A72E;       /* z 幣暖金 */
+  --accent-deep:#A8760F;  /* 暖金文字用（對紙底 ≥4.5:1） */
+  --danger:#BE3F35;
+
+  /* ---- LINE 聊天室視覺 ---- */
+  --line-bg:#8CA9CB;
+  --line-header:#FBFAF7;
+  --line-user:#8DE055;
+  --line-user-ink:#153006;
+  --line-bot:#FFFFFF;
+  --line-bot-ink:#1A1A1A;
+  --line-qr:#2E8B5B;      /* quick-reply 膠囊文字/框 */
+
+  --font: "Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC","Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+
+  /* ---- 尺度單位：1% of 16:9 slide 高度（純 CSS，不用 transform:scale） ---- */
+  --u: min(0.5625vw, 1vh);
+
+  /* ---- 字級：每一項皆以 max(20px, …) 設下限，確保 computed ≥ 20px ---- */
+  --fs-note:   clamp(20px, calc(var(--u) * 2.05), 24px);
+  --fs-body:   max(20px, calc(var(--u) * 2.35));
+  --fs-bubble: clamp(20px, calc(var(--u) * 2.2), 23px);
+  --fs-lead:   max(22px, calc(var(--u) * 2.85));
+  --fs-kicker: max(20px, calc(var(--u) * 2.15));
+  --fs-h3:     max(24px, calc(var(--u) * 3.4));
+  --fs-h2:     max(28px, calc(var(--u) * 4.7));
+  --fs-h1:     max(34px, calc(var(--u) * 7.2));
+  --fs-mega:   max(46px, calc(var(--u) * 12));
+
+  --pad: calc(var(--u) * 5.2);
+  --gap: calc(var(--u) * 3);
+  --radius: calc(var(--u) * 1.8);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+html,body{
+  height:100%;
+  background:#0d1712;
+  font-family:var(--font);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+/* 舞台：置中，維持 16:9，最大化填滿視窗（無 transform:scale） */
+.stage{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(120% 120% at 50% -10%, #16241b 0%, #0b130e 60%, #070c09 100%);
+}
+.deck{
+  position:relative;
+  width:min(100vw, 177.78vh);
+  height:min(56.25vw, 100vh);
+  background:var(--paper);
+  overflow:hidden;
+  box-shadow:0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.55);
+}
+
+/* 每頁 */
+.slide{
+  position:absolute; inset:0;
+  padding:var(--pad) calc(var(--pad) * 1.15);
+  display:none;
+  flex-direction:column;
+  background:var(--paper);
+  color:var(--ink);
+}
+.slide.active{ display:flex; }
+
+/* 再生紙細紋 + 回收循環浮水印 */
+.slide::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(28,90,58,.028) 0 1px, transparent 1px calc(var(--u)*2.4));
+  opacity:.6;
+}
+.deco{
+  position:absolute; right:0; bottom:0;
+  width:calc(var(--u)*40); height:calc(var(--u)*40);
+  color:var(--green-700); opacity:.05; pointer-events:none;
+}
+
+/* 頁首 */
+.head{ position:relative; z-index:2; display:flex; flex-direction:column; gap:calc(var(--u)*1); flex:0 0 auto; }
+.kicker{
+  display:inline-flex; align-items:center; gap:calc(var(--u)*1.2);
+  font-size:var(--fs-kicker); font-weight:700; letter-spacing:.04em;
+  color:var(--green-700); text-transform:none;
+}
+.kicker .dot{ width:calc(var(--u)*1.4); height:calc(var(--u)*1.4); border-radius:50%; background:var(--accent); flex:0 0 auto; }
+.kicker .num{
+  font-variant-numeric:tabular-nums; color:var(--paper); background:var(--green-700);
+  border-radius:calc(var(--u)*0.8); padding:0 calc(var(--u)*1.1); font-weight:800;
+}
+h1.title{ font-size:var(--fs-h1); font-weight:800; line-height:1.1; color:var(--green-900); letter-spacing:.01em; }
+h2.title{ font-size:var(--fs-h2); font-weight:800; line-height:1.12; color:var(--green-900); }
+.title .hl{ color:var(--green-600); }
+.title .gold{ color:var(--accent-deep); }
+.subtitle{ font-size:var(--fs-lead); color:var(--ink-soft); font-weight:500; line-height:1.4; }
+
+/* 頁身 */
+.body{ position:relative; z-index:2; flex:1 1 auto; min-height:0; display:flex; gap:var(--gap); margin-top:calc(var(--u)*1.8); }
+.col{ display:flex; flex-direction:column; min-height:0; min-width:0; }
+.col.grow{ flex:1 1 auto; }
+
+/* 清單 */
+ul.list{ list-style:none; display:flex; flex-direction:column; gap:calc(var(--u)*2); }
+ul.list li{
+  position:relative; font-size:var(--fs-body); line-height:1.45; color:var(--ink);
+  padding-left:calc(var(--u)*3.6);
+}
+ul.list li::before{
+  content:""; position:absolute; left:0; top:calc(var(--u)*0.7);
+  width:calc(var(--u)*2.1); height:calc(var(--u)*2.1); border-radius:calc(var(--u)*0.5);
+  background:var(--green-500); transform:rotate(45deg);
+}
+ul.list li b, ul.list li strong{ color:var(--green-900); font-weight:800; }
+ul.list.tight{ gap:calc(var(--u)*1.3); }
+ul.list.tight li{ font-size:var(--fs-note); line-height:1.4; }
+.muted{ color:var(--ink-soft); }
+
+/* 卡片 */
+.card{
+  background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(28,90,58,.16);
+  border-radius:var(--radius); padding:calc(var(--u)*3);
+  box-shadow:0 calc(var(--u)*0.6) calc(var(--u)*2) rgba(20,50,35,.06);
+}
+
+/* 大數字 / stat */
+.mega{ font-size:var(--fs-mega); font-weight:900; line-height:.95; color:var(--green-700); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+.mega .unit{ font-size:max(20px, calc(var(--u)*4.4)); font-weight:800; color:var(--ink-soft); margin-left:.2em; }
+.mega.gold{ color:var(--accent-deep); }
+.sm-unit{ font-size:max(20px, calc(var(--u)*3)); font-weight:700; }
+
+.chips{ display:flex; flex-wrap:wrap; gap:calc(var(--u)*1.6); }
+.chip{
+  font-size:var(--fs-note); font-weight:700; color:var(--green-900);
+  background:var(--green-100); border:calc(var(--u)*0.2) solid var(--green-300);
+  border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.9) calc(var(--u)*2);
+  font-variant-numeric:tabular-nums;
+}
+.chip.gold{ color:var(--accent-deep); background:#F7ECD3; border-color:#E9CE92; }
+
+/* 三層額度階梯 */
+.tiers{ display:flex; gap:calc(var(--u)*2.2); align-items:flex-end; }
+.tier{
+  flex:1 1 0; display:flex; flex-direction:column; justify-content:flex-end; gap:calc(var(--u)*1);
+  background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(28,90,58,.16);
+  border-radius:var(--radius); padding:calc(var(--u)*2.4);
+  border-bottom:calc(var(--u)*1) solid var(--green-500);
+}
+.tier .tlabel{ font-size:var(--fs-note); font-weight:700; color:var(--ink-soft); }
+.tier .tnum{ font-size:calc(var(--fs-h1)*0.92); font-weight:900; color:var(--green-700); line-height:1; font-variant-numeric:tabular-nums; }
+.tier .tsub{ font-size:var(--fs-note); color:var(--ink-soft); line-height:1.35; }
+.tier.t1{ min-height:46%; } .tier.t2{ min-height:64%; } .tier.t3{ min-height:88%; border-bottom-color:var(--accent); }
+.tier.t3 .tnum{ color:var(--accent-deep); }
+
+/* 三軸卡（合規） */
+.axes{ display:flex; gap:calc(var(--u)*2.4); height:100%; }
+.axis{
+  flex:1 1 0; display:flex; flex-direction:column; justify-content:center; gap:calc(var(--u)*1.6);
+  background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(190,63,53,.28);
+  border-top:calc(var(--u)*1.1) solid var(--danger);
+  border-radius:var(--radius); padding:calc(var(--u)*3) calc(var(--u)*2.6);
+}
+.axis .aicon{ line-height:1; color:var(--danger); }
+.axis .aicon svg{ width:calc(var(--u)*6.5); height:calc(var(--u)*6.5); }
+.axis .atitle{ font-size:var(--fs-h3); font-weight:800; color:var(--green-900); }
+.axis .atext{ font-size:var(--fs-body); color:var(--ink); line-height:1.4; }
+.axis .aban{ margin-top:calc(var(--u)*0.6); align-self:flex-start; font-size:var(--fs-note); font-weight:800; color:#fff; background:var(--danger); border-radius:calc(var(--u)*0.8); padding:calc(var(--u)*0.5) calc(var(--u)*1.4); }
+
+/* ============ LINE 聊天室模擬 ============ */
+/* mock 頁：壓縮頁首與邊距，把垂直空間讓給手機框 */
+.slide.mock{ padding-top:calc(var(--u)*3.2); padding-bottom:calc(var(--u)*3.2); }
+.slide.mock .head{ gap:calc(var(--u)*0.4); }
+.slide.mock h1.title{ line-height:1.04; }
+.slide.mock .body{ margin-top:calc(var(--u)*1); }
+/* 緊湊照片 chip（取代大型照片佔位氣泡，省垂直空間） */
+.photo-chip{ display:inline-flex; align-items:center; gap:calc(var(--u)*1); background:var(--line-user); color:var(--line-user-ink); border-radius:calc(var(--u)*2.2); border-bottom-right-radius:calc(var(--u)*0.6); padding:calc(var(--u)*0.9) calc(var(--u)*1.6); font-size:var(--fs-note); font-weight:700; }
+.photo-chip svg{ width:calc(var(--u)*2.6); height:calc(var(--u)*2.6); flex:0 0 auto; }
+.phone-wrap{ position:relative; display:flex; flex-direction:column; align-items:center; height:100%; min-height:0; }
+.shot-tag{
+  position:absolute; top:calc(var(--u)*1.4); right:calc(var(--u)*1.4); z-index:5;
+  font-size:var(--fs-note); font-weight:700; color:#fff;
+  background:rgba(14,53,34,.82); border-radius:calc(var(--u)*0.8);
+  padding:calc(var(--u)*0.5) calc(var(--u)*1.4);
+}
+.phone{
+  position:relative; height:100%; aspect-ratio:9/13; max-width:100%;
+  background:#0b0f13; border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.7);
+  box-shadow:0 calc(var(--u)*1.4) calc(var(--u)*4) rgba(20,40,28,.28);
+  display:flex; flex-direction:column;
+}
+.screen{
+  position:relative; flex:1 1 auto; min-height:0; border-radius:calc(var(--u)*3.2);
+  overflow:hidden; display:flex; flex-direction:column; background:var(--line-bg);
+}
+.line-header{
+  flex:0 0 auto; display:flex; align-items:center; gap:calc(var(--u)*1.2);
+  background:var(--line-header); padding:calc(var(--u)*1.1) calc(var(--u)*1.6);
+  padding-right:calc(var(--u)*13);
+  border-bottom:1px solid rgba(0,0,0,.08);
+}
+.line-header .back{ font-size:var(--fs-body); color:#3a3a3a; font-weight:700; }
+.oa-ava{
+  width:calc(var(--u)*2.9); height:calc(var(--u)*2.9); border-radius:50%;
+  background:var(--green-700); color:#fff; display:flex; align-items:center; justify-content:center;
+  flex:0 0 auto;
+}
+.oa-ava svg{ width:64%; height:64%; }
+.line-header .oa-name{ font-size:var(--fs-body); font-weight:800; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.chat{
+  flex:1 1 auto; min-height:0; overflow:hidden;
+  padding:calc(var(--u)*1.2) calc(var(--u)*1.5);
+  display:flex; flex-direction:column; gap:calc(var(--u)*0.95);
+}
+.row{ display:flex; gap:calc(var(--u)*1); align-items:flex-end; max-width:100%; }
+.row.bot{ justify-content:flex-start; }
+.row.user{ justify-content:flex-end; }
+.bot-ava{
+  width:calc(var(--u)*2.8); height:calc(var(--u)*2.8); border-radius:50%; flex:0 0 auto;
+  background:var(--green-600); color:#fff; display:flex; align-items:center; justify-content:center;
+}
+.bot-ava svg{ width:62%; height:62%; }
+.bubble{
+  font-size:var(--fs-bubble); line-height:1.42; border-radius:calc(var(--u)*2.2);
+  padding:calc(var(--u)*1.15) calc(var(--u)*1.6); max-width:84%;
+  word-break:break-word; position:relative;
+}
+.bubble.wide{ max-width:92%; line-height:1.36; }
+.bubble.bot{ background:var(--line-bot); color:var(--line-bot-ink); border-top-left-radius:calc(var(--u)*0.6); }
+.bubble.user{ background:var(--line-user); color:var(--line-user-ink); border-bottom-right-radius:calc(var(--u)*0.6); font-weight:600; }
+.qr-list{ display:flex; flex-wrap:wrap; gap:calc(var(--u)*1); padding-left:calc(var(--u)*3.8); }
+.qr{
+  font-size:var(--fs-note); font-weight:800; color:var(--line-qr);
+  background:#fff; border:calc(var(--u)*0.25) solid var(--line-qr);
+  border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.7) calc(var(--u)*1.6); white-space:nowrap;
+}
+.qr.appeal{ color:var(--accent-deep); border-color:var(--accent-deep); }
+.sys-note{
+  align-self:center; text-align:center; font-size:var(--fs-note); font-weight:600;
+  color:#39506a; background:rgba(255,255,255,.55); border-radius:calc(var(--u)*4);
+  padding:calc(var(--u)*0.6) calc(var(--u)*1.8); margin:0;
+}
+
+/* Flex 同意書卡 */
+.flex-card{
+  background:#fff; border-radius:calc(var(--u)*1.8); overflow:hidden; max-width:86%;
+  box-shadow:0 calc(var(--u)*0.6) calc(var(--u)*1.6) rgba(0,0,0,.14);
+}
+.flex-card .fc-top{ background:var(--green-700); color:#fff; font-size:var(--fs-h3); font-weight:800; padding:calc(var(--u)*1.6) calc(var(--u)*2); }
+.flex-card .fc-body{ font-size:var(--fs-bubble); line-height:1.5; color:#222; padding:calc(var(--u)*2); }
+.flex-card .fc-btns{ display:flex; flex-direction:column; gap:calc(var(--u)*1.2); padding:0 calc(var(--u)*2) calc(var(--u)*2); }
+.fc-btn{ font-size:var(--fs-body); font-weight:800; text-align:center; border-radius:calc(var(--u)*1); padding:calc(var(--u)*1.3); }
+.fc-btn.primary{ background:var(--green-600); color:#fff; }
+.fc-btn.secondary{ background:#fff; color:var(--green-700); border:calc(var(--u)*0.25) solid var(--green-600); }
+
+/* ============ LIFF 查詢頁 ============ */
+.liff-screen{ background:var(--paper-3); }
+.liff-top{ flex:0 0 auto; background:#fff; padding:calc(var(--u)*1.1) calc(var(--u)*1.8); border-bottom:1px solid rgba(0,0,0,.08); font-size:var(--fs-body); font-weight:800; color:var(--green-900); }
+.liff-body{ flex:1 1 auto; min-height:0; overflow:hidden; padding:calc(var(--u)*1.1); display:flex; flex-direction:column; gap:calc(var(--u)*0.55); }
+.liff-stat-big{ display:flex; align-items:baseline; gap:calc(var(--u)*1.2); }
+.liff-stat-big .n{ font-size:calc(var(--fs-h1)*0.82); font-weight:900; color:var(--green-700); font-variant-numeric:tabular-nums; line-height:1; }
+.liff-stat-big .l{ font-size:var(--fs-body); font-weight:700; color:var(--ink-soft); }
+.statcard{ background:#fff; border:1px solid rgba(28,90,58,.16); border-radius:calc(var(--u)*1.4); padding:calc(var(--u)*1.3); display:flex; flex-direction:column; gap:calc(var(--u)*0.3); }
+.statcard .sc-l{ font-size:var(--fs-note); font-weight:700; color:var(--ink-soft); }
+.statcard .sc-v{ font-size:calc(var(--fs-h3)*1); font-weight:900; color:var(--accent-deep); font-variant-numeric:tabular-nums; }
+.statcard .sc-v .z{ font-size:max(20px, calc(var(--u)*2.6)); }
+.statcard .sc-hint{ font-size:var(--fs-note); color:var(--green-600); font-weight:700; }
+.liff-sec{ font-size:var(--fs-note); font-weight:800; color:var(--green-900); margin-top:calc(var(--u)*0.2); }
+.rec-row{ display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid rgba(28,90,58,.12); border-radius:calc(var(--u)*1); padding:calc(var(--u)*0.95) calc(var(--u)*1.5); }
+.rec-row .rn{ font-size:var(--fs-note); font-weight:700; color:var(--ink); }
+.rec-row .rz{ font-size:var(--fs-note); font-weight:900; color:var(--accent-deep); font-variant-numeric:tabular-nums; }
+.liff-search{ font-size:var(--fs-note); color:#7a857d; background:#fff; border:1px solid rgba(28,90,58,.2); border-radius:calc(var(--u)*1); padding:calc(var(--u)*1) calc(var(--u)*1.5); }
+.liff-filter{ display:flex; align-items:center; gap:calc(var(--u)*1); font-size:var(--fs-note); font-weight:700; color:var(--green-900); }
+.liff-filter .box{ width:calc(var(--u)*2.2); height:calc(var(--u)*2.2); border-radius:calc(var(--u)*0.4); border:calc(var(--u)*0.28) solid var(--green-600); background:var(--green-600); color:#fff; display:flex; align-items:center; justify-content:center; }
+.task-row{ background:#fff; border:1px solid rgba(28,90,58,.12); border-radius:calc(var(--u)*1); padding:calc(var(--u)*0.8) calc(var(--u)*1.4); display:flex; flex-direction:column; gap:calc(var(--u)*0.2); }
+.task-row .tr-top{ display:flex; justify-content:space-between; align-items:baseline; gap:calc(var(--u)*1); }
+.task-row .tr-name{ font-size:var(--fs-note); font-weight:800; color:var(--ink); }
+.task-row .tr-alias{ font-size:var(--fs-note); color:var(--ink-soft); }
+.task-row .tr-st{ font-size:var(--fs-note); font-weight:800; white-space:nowrap; }
+.tr-st.gap{ color:var(--green-700); } .tr-st.full{ color:var(--accent-deep); } .tr-st.done{ color:var(--green-500); }
+.tr-slot{ font-size:var(--fs-note); color:var(--accent-deep); font-weight:700; }
+.liff-cta{ margin-top:auto; text-align:center; font-size:var(--fs-body); font-weight:800; color:#fff; background:var(--green-600); border-radius:calc(var(--u)*1); padding:calc(var(--u)*0.9); }
+.bottom-nav{ flex:0 0 auto; display:flex; background:#fff; border-top:1px solid rgba(0,0,0,.1); }
+.bn-item{ flex:1 1 0; text-align:center; font-size:var(--fs-note); font-weight:800; color:#9aa39c; padding:calc(var(--u)*1.1) 0; }
+.bn-item.active{ color:var(--green-700); box-shadow:inset 0 calc(var(--u)*0.5) 0 var(--green-600); }
+
+/* 兩支手機並排 */
+.duo{ display:flex; gap:calc(var(--u)*2.6); justify-content:center; height:100%; }
+.duo .phone-wrap{ flex:1 1 0; min-width:0; }
+.duo .phone{ max-width:100%; }
+.duo-label{ position:absolute; top:calc(var(--u)*1.4); left:calc(var(--u)*1.4); z-index:5; font-size:var(--fs-note); font-weight:800; color:#fff; background:rgba(28,90,58,.85); border-radius:calc(var(--u)*0.8); padding:calc(var(--u)*0.5) calc(var(--u)*1.4); }
+
+/* 素材佔位框 / AI 圖檔容器 */
+.ph-box{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--u)*1);
+  border:calc(var(--u)*0.35) dashed var(--green-500); border-radius:var(--radius);
+  background:repeating-linear-gradient(-45deg, rgba(46,139,91,.05) 0 calc(var(--u)*1.4), transparent calc(var(--u)*1.4) calc(var(--u)*2.8));
+  color:var(--green-700); text-align:center; padding:calc(var(--u)*2);
+}
+.ph-box .pi{ font-size:var(--fs-h3); font-weight:900; }
+.ph-box .pt{ font-size:var(--fs-note); font-weight:700; color:var(--ink-soft); line-height:1.4; }
+
+/* AI 圖檔顯示：img 顯示時吃滿容器；載入失敗自動 fallback 到 ph-box（透過 hidden attr 切換） */
+.ai-img{ position:relative; overflow:hidden; border-radius:var(--radius); border:calc(var(--u)*0.2) solid rgba(28,90,58,.2); background:var(--paper-3); }
+.ai-img img{ display:block; width:100%; height:100%; object-fit:cover; }
+.ai-img .ai-cap{ position:absolute; left:calc(var(--u)*1); bottom:calc(var(--u)*1); font-size:var(--fs-note); font-weight:800; color:#fff; background:rgba(14,53,34,.75); border-radius:calc(var(--u)*0.6); padding:calc(var(--u)*0.4) calc(var(--u)*1.2); }
+.ai-img .ai-cap.bad{ background:rgba(190,63,53,.82); }
+.ai-img.pending{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--u)*1); border-style:dashed; border-color:var(--green-500); color:var(--green-700); text-align:center; padding:calc(var(--u)*2); background:repeating-linear-gradient(-45deg, rgba(46,139,91,.05) 0 calc(var(--u)*1.4), transparent calc(var(--u)*1.4) calc(var(--u)*2.8)); }
+.ai-img.pending .pi{ font-size:var(--fs-h3); font-weight:900; }
+.ai-img.pending .pt{ font-size:var(--fs-note); font-weight:700; color:var(--ink-soft); line-height:1.4; }
+
+/* 封面 / 封底 */
+.cover{ justify-content:center; align-items:flex-start; padding:calc(var(--pad)*1.4); background:
+  radial-gradient(130% 100% at 100% 0%, var(--green-100) 0%, var(--paper) 55%);
+}
+.cover-grid{ display:flex; width:100%; gap:var(--gap); align-items:center; }
+.brand-mark{ display:flex; align-items:center; gap:calc(var(--u)*1.6); }
+.brand-mark .logo-ph{
+  width:calc(var(--u)*8); height:calc(var(--u)*8); border-radius:calc(var(--u)*1.4);
+  border:calc(var(--u)*0.3) dashed var(--green-600); display:flex; align-items:center; justify-content:center;
+  font-size:var(--fs-note); font-weight:800; color:var(--green-700); text-align:center; line-height:1.2;
+}
+.brand-mark .bm-name{ font-size:var(--fs-body); font-weight:800; color:var(--green-900); }
+.cover h1{ font-size:var(--fs-mega); font-weight:900; line-height:1.02; color:var(--green-900); letter-spacing:.01em; }
+.cover .cov-sub{ font-size:var(--fs-h2); font-weight:800; color:var(--green-600); margin-top:calc(var(--u)*2); }
+.cover .cov-sub .sep{ color:var(--accent); margin:0 .35em; }
+.cover .cov-line{ font-size:var(--fs-lead); color:var(--ink-soft); margin-top:calc(var(--u)*2.4); line-height:1.5; max-width:52ch; }
+.cover-visual{ flex:0 0 38%; height:100%; display:flex; align-items:center; }
+
+.closing{ justify-content:center; background:radial-gradient(130% 120% at 0% 100%, var(--green-100), var(--paper) 60%); }
+.closing h1{ font-size:var(--fs-mega); font-weight:900; color:var(--green-900); line-height:1.04; }
+.closing .cl-sub{ font-size:var(--fs-h2); font-weight:800; color:var(--green-600); margin-top:calc(var(--u)*2); }
+.closing .cl-steps{ display:flex; gap:calc(var(--u)*1.6); flex-wrap:wrap; margin-top:calc(var(--u)*3); }
+.cl-step{ font-size:var(--fs-body); font-weight:800; color:var(--green-900); background:var(--paper-3); border:calc(var(--u)*0.2) solid var(--green-300); border-radius:calc(var(--u)*4); padding:calc(var(--u)*1) calc(var(--u)*2.2); }
+.cl-step .n{ color:#fff; background:var(--green-600); border-radius:50%; padding:0 calc(var(--u)*1.1); margin-right:calc(var(--u)*1); font-variant-numeric:tabular-nums; }
+
+/* 流程列（頁 5 / 6 版面小圖示） */
+.flow{ display:flex; align-items:stretch; gap:calc(var(--u)*1.4); flex-wrap:wrap; }
+.flow.vertical{ flex-direction:column; }
+.flow .step{ flex:1 1 0; min-width:calc(var(--u)*18); background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(28,90,58,.16); border-radius:var(--radius); padding:calc(var(--u)*2); display:flex; flex-direction:column; gap:calc(var(--u)*0.8); }
+.flow .step .sn{ font-size:var(--fs-note); font-weight:900; color:#fff; background:var(--green-600); width:calc(var(--u)*3.4); height:calc(var(--u)*3.4); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.flow .step .sh{ font-size:var(--fs-body); font-weight:800; color:var(--green-900); }
+.flow .step .sd{ font-size:var(--fs-note); color:var(--ink-soft); line-height:1.4; }
+
+/* 頁 3 資訊流：水平三格 + 箭頭 */
+.info-flow{ display:flex; align-items:stretch; gap:0; background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(28,90,58,.16); border-radius:var(--radius); padding:calc(var(--u)*2.4); }
+.info-flow .box{ flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--u)*0.6); padding:0 calc(var(--u)*1.5); text-align:center; min-width:0; }
+.info-flow .box .n{ font-size:calc(var(--fs-h2)*0.9); font-weight:900; color:var(--accent-deep); font-variant-numeric:tabular-nums; line-height:1; }
+.info-flow .box .n.plain{ color:var(--green-700); }
+.info-flow .box .l{ font-size:var(--fs-note); font-weight:800; color:var(--green-900); }
+.info-flow .box .s{ font-size:var(--fs-note); color:var(--ink-soft); line-height:1.35; }
+.info-flow .arr{ flex:0 0 auto; display:flex; align-items:center; font-size:calc(var(--fs-h2)*1.1); font-weight:900; color:var(--green-500); padding:0 calc(var(--u)*0.6); }
+
+/* 頁 4 抽獎獎項卡 */
+.prize-grid{ display:flex; gap:calc(var(--u)*1.6); }
+.prize-card{
+  flex:1 1 0; display:flex; flex-direction:column; gap:calc(var(--u)*0.6); align-items:center; justify-content:center;
+  background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(28,90,58,.16); border-radius:var(--radius);
+  padding:calc(var(--u)*2.2) calc(var(--u)*1.4);
+  border-top:calc(var(--u)*1) solid var(--accent);
+}
+.prize-card.gold{ background:#F7ECD3; border-color:#E9CE92; border-top-color:var(--accent-deep); }
+.prize-card .pl{ font-size:var(--fs-note); font-weight:800; color:var(--green-900); }
+.prize-card .pn{ font-size:calc(var(--fs-h1)*0.8); font-weight:900; color:var(--accent-deep); font-variant-numeric:tabular-nums; line-height:1; }
+.prize-card .pn .un{ font-size:max(20px, calc(var(--u)*2.8)); font-weight:800; color:var(--ink-soft); margin-left:.15em; }
+.prize-card .pc{ font-size:var(--fs-note); color:var(--ink-soft); font-weight:700; }
+.prize-total{ display:flex; justify-content:space-between; align-items:center; gap:calc(var(--u)*2); background:var(--green-100); border:calc(var(--u)*0.2) solid var(--green-300); border-radius:var(--radius); padding:calc(var(--u)*1.6) calc(var(--u)*2.4); }
+.prize-total .lbl{ font-size:var(--fs-body); font-weight:800; color:var(--green-900); }
+.prize-total .val{ font-size:calc(var(--fs-h2)*0.9); font-weight:900; color:var(--green-700); font-variant-numeric:tabular-nums; }
+
+/* 高信心/流程 說明面板 */
+.note-panel{ display:flex; flex-direction:column; gap:calc(var(--u)*2); justify-content:center; }
+.pill-strong{ align-self:flex-start; font-size:var(--fs-body); font-weight:800; color:#fff; background:var(--green-600); border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.9) calc(var(--u)*2.4); }
+.pill-strong.gold{ background:var(--accent); color:#3a2a05; }
+.status-badge{ align-self:flex-start; display:inline-flex; align-items:center; gap:calc(var(--u)*1); font-size:var(--fs-body); font-weight:900; color:#fff; background:var(--green-700); border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.9) calc(var(--u)*2.4); }
+.status-badge .live{ width:calc(var(--u)*1.6); height:calc(var(--u)*1.6); border-radius:50%; background:#7CFF9F; box-shadow:0 0 0 calc(var(--u)*0.6) rgba(124,255,159,.35); }
+
+/* 頁 7：拒絕氣泡並排 */
+.reject-row{ display:flex; gap:calc(var(--u)*1.6); }
+.reject-card{ flex:1 1 0; display:flex; flex-direction:column; gap:calc(var(--u)*0.8); background:var(--paper-3); border:calc(var(--u)*0.2) solid rgba(28,90,58,.16); border-radius:var(--radius); padding:calc(var(--u)*1.6); }
+.reject-card .rt{ font-size:var(--fs-note); font-weight:800; color:var(--green-900); text-align:center; }
+.reject-card .rb{ font-size:var(--fs-note); line-height:1.4; color:var(--line-bot-ink); background:var(--line-bot); border-radius:calc(var(--u)*1.4); padding:calc(var(--u)*1.1) calc(var(--u)*1.3); border-top-left-radius:calc(var(--u)*0.4); }
+.side-note{ display:flex; gap:calc(var(--u)*1.4); align-items:center; background:#fff; border-left:calc(var(--u)*0.8) solid var(--accent); border-radius:calc(var(--u)*1); padding:calc(var(--u)*1.2) calc(var(--u)*1.8); font-size:var(--fs-note); color:var(--ink); font-weight:700; line-height:1.4; }
+.side-note b{ color:var(--green-900); }
+
+/* ============ 導覽 / 頁碼 / 進度 ============ */
+.hud{ position:fixed; z-index:20; }
+.rail{ left:0; right:0; bottom:0; height:calc(var(--u)*0.9); background:rgba(255,255,255,.14); }
+.rail .fill{ height:100%; width:0; background:linear-gradient(90deg,var(--green-500),var(--accent)); transition:width .35s ease; }
+.indicator{
+  right:calc(var(--u)*2.4); bottom:calc(var(--u)*2.6);
+  font-size:var(--fs-note); font-weight:800; color:#eef4ee;
+  background:rgba(14,53,34,.72); border-radius:calc(var(--u)*4);
+  padding:calc(var(--u)*0.7) calc(var(--u)*2); font-variant-numeric:tabular-nums;
+}
+.nav-btns{ left:calc(var(--u)*2.4); bottom:calc(var(--u)*2.6); display:flex; gap:calc(var(--u)*1.2); }
+.nav-btn{
+  font-size:var(--fs-note); font-weight:900; color:#eef4ee; cursor:pointer;
+  background:rgba(14,53,34,.72); border:none; border-radius:calc(var(--u)*4);
+  width:calc(var(--u)*5.4); height:calc(var(--u)*4.4); display:flex; align-items:center; justify-content:center;
+}
+.nav-btn:hover{ background:rgba(28,90,58,.92); }
+.hint{
+  left:50%; transform:translateX(-50%); bottom:calc(var(--u)*2.6);
+  font-size:var(--fs-note); font-weight:700; color:#cfe0d4; opacity:.9;
+  background:rgba(14,53,34,.5); border-radius:calc(var(--u)*4); padding:calc(var(--u)*0.6) calc(var(--u)*2);
+}
+
+/* 進場動畫（尊重 reduced-motion） */
+@media (prefers-reduced-motion: no-preference){
+  .slide.active .anim{ opacity:0; transform:translateY(calc(var(--u)*1.6)); animation:rise .5s ease forwards; }
+  .slide.active .anim:nth-child(1){ animation-delay:.02s; }
+  .slide.active .anim:nth-child(2){ animation-delay:.10s; }
+  .slide.active .anim:nth-child(3){ animation-delay:.18s; }
+  .slide.active .anim:nth-child(4){ animation-delay:.26s; }
+  @keyframes rise{ to{ opacity:1; transform:none; } }
+}
+</style>
+</head>
+<body>
+
+<!-- 回收循環浮水印 symbol（inline，無外部依賴） -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="recycle" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M34 22 A30 30 0 0 1 82 44"/>
+      <path d="M82 44 l-9 -3 M82 44 l3 -9"/>
+      <path d="M66 78 A30 30 0 0 1 18 56"/>
+      <path d="M18 56 l9 3 M18 56 l-3 9"/>
+    </g>
+  </symbol>
+  <symbol id="leaf" viewBox="0 0 100 100">
+    <path d="M78 20 C40 20 20 44 20 78 C58 80 82 58 78 20 Z M32 66 C46 52 60 44 72 40" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ic-camera" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="14" y="30" width="72" height="50" rx="8"/>
+      <path d="M36 30 l6 -10 h16 l6 10"/>
+      <circle cx="50" cy="55" r="14"/>
+    </g>
+  </symbol>
+  <symbol id="ic-catalog" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="20" y="16" width="60" height="68" rx="6"/>
+      <path d="M50 16 v68"/>
+      <path d="M30 34 h12 M58 34 h12 M30 48 h12 M58 48 h12"/>
+    </g>
+  </symbol>
+  <symbol id="ic-rephoto" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="26" y="14" width="48" height="72" rx="8"/>
+      <path d="M44 74 h12"/>
+      <rect x="36" y="26" width="28" height="20" rx="3"/>
+    </g>
+  </symbol>
+  <symbol id="ic-blur" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="50" cy="50" r="34" stroke-dasharray="4 10"/>
+      <path d="M38 44 h4 M58 44 h4 M40 62 q10 8 20 0"/>
+    </g>
+  </symbol>
+  <symbol id="ic-gift" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="18" y="36" width="64" height="46" rx="4"/>
+      <path d="M12 36 h76"/>
+      <path d="M50 20 v62"/>
+      <path d="M32 20 c-6 0 -10 6 -6 10 c4 4 24 6 24 6 s-6 -16 -18 -16 z"/>
+      <path d="M68 20 c 6 0 10 6 6 10 c-4 4 -24 6 -24 6 s6 -16 18 -16 z"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="stage">
+<div class="deck" id="deck">
+
+  <!-- ============ 頁 1 · 封面 ============ -->
+  <section class="slide cover">
+    <svg class="deco"><use href="#leaf"/></svg>
+    <div class="cover-grid">
+      <div class="col grow">
+        <h1 class="anim">員工回收物<br>拍照蒐集活動</h1>
+        <div class="cov-sub anim">拍回收物<span class="sep">·</span>賺 z 幣<span class="sep">·</span>教 AI 認識回收物</div>
+        <div class="cov-line anim">用你手機裡的一張照片，幫大豐建立自己的智慧回收辨識模型。</div>
+      </div>
+      <div class="cover-visual anim">
+        <!-- AI 圖：assets/cover_hero.png；不存在時 CSS fallback 顯示 pending 樣式 -->
+        <div class="ai-img" style="width:100%; aspect-ratio:4/5">
+          <img src="assets/cover_hero.png" alt="封面主視覺" onerror="this.style.display='none'; this.parentElement.classList.add('pending'); this.parentElement.innerHTML='<div class=&quot;pi&quot;>封面主視覺</div><div class=&quot;pt&quot;>[assets/cover_hero.png 待產出<br>codex-image 生成中]</div>';">
+          <div class="ai-cap">封面主視覺</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 2 · 為什麼辦 ============ -->
+  <section class="slide">
+    <svg class="deco"><use href="#recycle"/></svg>
+    <div class="head anim">
+      <span class="kicker"><span class="num">02</span>為什麼辦這個活動</span>
+      <h1 class="title">我們在蒐集什麼、<span class="hl">為什麼</span></h1>
+    </div>
+    <div class="body">
+      <div class="col grow anim" style="flex:0 0 42%; justify-content:center; gap:calc(var(--u)*2)">
+        <div class="card">
+          <div class="muted" style="font-size:var(--fs-body); font-weight:700">3 週目標</div>
+          <div class="mega">15,900<span class="unit">張過審照片</span></div>
+          <div class="chips" style="margin-top:calc(var(--u)*2)">
+            <span class="chip">159 品項</span>
+            <span class="chip">每項 100 張</span>
+            <span class="chip">為期 3 週</span>
+          </div>
+        </div>
+        <div class="muted" style="font-size:var(--fs-note); line-height:1.4">數字為「目標」。</div>
+      </div>
+      <div class="col grow anim" style="justify-content:center">
+        <ul class="list">
+          <li><b>用途</b>：訓練公司內部的回收物 AI 辨識模型（提升辨識準確率）。</li>
+          <li><b>你的角色</b>：拍下清單裡的真實回收物，系統即時辨識、由你確認結果。</li>
+          <li><b>為什麼要「真人拍實物」</b>：型錄圖、網路圖訓練不出能認得<b>真實照片</b>的模型。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 3 · 獎勵機制 · Z 幣 ============ -->
+  <section class="slide">
+    <svg class="deco"><use href="#recycle"/></svg>
+    <div class="head anim">
+      <span class="kicker"><span class="num">03</span>獎勵機制 · Z 幣</span>
+      <h1 class="title">拍一張過審，<span class="gold">+10 z 幣</span></h1>
+    </div>
+    <div class="body" style="flex-direction:column; gap:calc(var(--u)*2.4)">
+      <!-- 資訊流圖：每張過審 → 累積 → 兌換 -->
+      <div class="anim info-flow">
+        <div class="box">
+          <div class="n">+10<span style="font-size:.6em; margin-left:.2em; color:var(--ink-soft)">z</span></div>
+          <div class="l">每張過審</div>
+          <div class="s">照片合規 + AI 辨識出品項 + 你確認結果</div>
+        </div>
+        <div class="arr">→</div>
+        <div class="box">
+          <div class="n plain">1,000<span style="font-size:.6em; margin-left:.2em; color:var(--ink-soft)">z</span></div>
+          <div class="l">累積門檻</div>
+          <div class="s">≈ 100 張過審</div>
+        </div>
+        <div class="arr">→</div>
+        <div class="box">
+          <div class="n">100<span style="font-size:.55em; margin-left:.2em; color:var(--ink-soft)">元</span></div>
+          <div class="l">全聯禮券</div>
+          <div class="s">活動後<b>結算發放</b>（LIFF 不做即時兌換）</div>
+        </div>
+      </div>
+
+      <!-- 三層額度階梯 -->
+      <div class="col grow anim" style="justify-content:flex-end">
+        <div style="font-size:var(--fs-note); font-weight:800; color:var(--green-900); margin-bottom:calc(var(--u)*1.2)">額度設計：為了收到多樣性的照片</div>
+        <div class="tiers">
+          <div class="tier t2"><div class="tlabel">單一品項</div><div class="tnum">3<span class="sm-unit"> 張</span></div><div class="tsub">同一品項每人最多 3 張，讓更多不同的人入鏡</div></div>
+          <div class="tier t2"><div class="tlabel">品項池</div><div class="tnum">100<span class="sm-unit"> 張</span></div><div class="tsub">每個品項全公司共 100 張收滿</div></div>
+          <div class="tier t2" style="border-bottom-color:var(--green-300)"><div class="tlabel">每日</div><div class="tnum" style="color:var(--green-600)">無上限</div><div class="tsub">一天想拍多少都收</div></div>
+        </div>
+        <div class="muted" style="font-size:var(--fs-note); font-weight:700; margin-top:calc(var(--u)*1.6); line-height:1.4">z 幣為公司會員體系點數，可在 LIFF「我的貢獻」頁隨時查。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 4 · 第一波抽獎 ============ -->
+  <section class="slide">
+    <svg class="deco"><use href="#recycle"/></svg>
+    <div class="head anim">
+      <span class="kicker"><span class="num">04</span>第一波抽獎</span>
+      <h1 class="title">加碼抽獎活動 · 總獎金 <span class="gold">3.4 萬元</span></h1>
+    </div>
+    <div class="body" style="flex-direction:column; gap:calc(var(--u)*2)">
+      <!-- 資格流程圖 -->
+      <div class="anim info-flow">
+        <div class="box">
+          <div class="n plain">10<span style="font-size:.55em; margin-left:.2em; color:var(--ink-soft)">張過審</span></div>
+          <div class="l">累積門檻</div>
+          <div class="s">以入帳過審張數為基準</div>
+        </div>
+        <div class="arr">→</div>
+        <div class="box">
+          <div class="n">+1<span style="font-size:.55em; margin-left:.2em; color:var(--ink-soft)">張抽獎券</span></div>
+          <div class="l">獲得資格</div>
+          <div class="s">含申訴補發也算</div>
+        </div>
+        <div class="arr">→</div>
+        <div class="box">
+          <div class="n plain" style="font-size:calc(var(--fs-h2)*0.9)">累計不歸零</div>
+          <div class="l">可持續累積</div>
+          <div class="s">活動結束一次抽</div>
+        </div>
+      </div>
+
+      <!-- 4 層獎項卡 -->
+      <div class="anim prize-grid">
+        <div class="prize-card gold">
+          <div class="pl">1 獎</div>
+          <div class="pn">10,000<span class="un">元</span></div>
+          <div class="pc">1 名</div>
+        </div>
+        <div class="prize-card">
+          <div class="pl">2 獎</div>
+          <div class="pn">5,000<span class="un">元</span></div>
+          <div class="pc">2 名</div>
+        </div>
+        <div class="prize-card">
+          <div class="pl">3 獎</div>
+          <div class="pn">2,000<span class="un">元</span></div>
+          <div class="pc">3 名</div>
+        </div>
+        <div class="prize-card">
+          <div class="pl">幸運獎</div>
+          <div class="pn">1,000<span class="un">元</span></div>
+          <div class="pc">8 名</div>
+        </div>
+      </div>
+
+      <!-- 總計 + 底部註記 -->
+      <div class="anim">
+        <div class="prize-total">
+          <span class="lbl">合計</span>
+          <span class="val">14 名 · 總 34,000 元</span>
+        </div>
+        <div class="muted" style="font-size:var(--fs-note); font-weight:700; line-height:1.55; margin-top:calc(var(--u)*1.4)">
+          獎項為<b style="color:var(--accent-deep)">禮券或等值獎項</b>　·　第一波截止 <b style="color:var(--green-900)">2026/07/31</b>，<b style="color:var(--green-900)">8 月上旬</b>公佈得獎名單　·　抽獎資格計算基準：<b>入帳過審張數（含申訴補發）</b>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 5 · 如何加入（3 步驟 + 同意書 · 雙手機並排） ============ -->
+  <section class="slide mock">
+    <div class="head anim">
+      <span class="kicker"><span class="num">05</span>如何加入</span>
+      <h1 class="title">3 步驟完成註冊，<span class="hl">全程在 LINE 對話</span></h1>
+    </div>
+    <div class="body">
+      <div class="col grow anim" style="flex:0 0 38%; justify-content:center; gap:calc(var(--u)*2)">
+        <div class="flow">
+          <div class="step"><div class="sn">1</div><div class="sh">工號</div><div class="sd">5 位純數字</div></div>
+          <div class="step"><div class="sn">2</div><div class="sh">ZERO ZERO 會員手機</div><div class="sd">09 開頭 10 碼</div></div>
+          <div class="step"><div class="sn">3</div><div class="sh">部門</div><div class="sd">輸入部門名稱</div></div>
+        </div>
+        <ul class="list tight">
+          <li>加 LINE 好友後，在對話裡依序填 3 欄，<b>不用填外部表單</b>。</li>
+          <li>最後按下同意書的<b>「我同意」</b>就完成註冊。</li>
+        </ul>
+        <div style="align-self:flex-start; width:44%; background:#fff; border-radius:calc(var(--u)*1); padding:calc(var(--u)*1.2); box-shadow:0 calc(var(--u)*0.4) calc(var(--u)*1.4) rgba(20,50,35,.08)">
+          <img src="assets/line_qr.png" alt="LINE@ 加好友 QR" style="width:100%; height:auto; display:block">
+          <div style="text-align:center; font-size:var(--fs-note); font-weight:800; color:var(--green-700); margin-top:calc(var(--u)*0.6)">掃碼加好友</div>
+        </div>
+      </div>
+      <!-- 雙手機並排：歡迎詞 + 同意書 -->
+      <!-- SCREENSHOT-REPLACE: 對應 screenshot_checklist 01（歡迎詞氣泡）、02（同意書 Flex 卡） -->
+      <div class="col grow anim">
+        <div class="duo">
+          <div class="phone-wrap">
+            <span class="duo-label">① 歡迎詞</span>
+            <span class="shot-tag">畫面示意</span>
+            <img class="shot" alt="" hidden>
+            <div class="phone">
+              <div class="screen">
+                <div class="line-header">
+                  <span class="back">‹</span>
+                  <span class="oa-ava"><svg viewBox="0 0 100 100"><use href="#recycle"/></svg></span>
+                  <span class="oa-name">大豐環保 · 回收蒐集</span>
+                </div>
+                <div class="chat">
+                  <div class="row bot">
+                    <span class="bot-ava"><svg viewBox="0 0 100 100"><use href="#recycle"/></svg></span>
+                    <div class="bubble bot wide">👋 歡迎加入大豐環保「員工回收物拍照蒐集」活動！<br><br>📋 完成註冊只要 3 步驟：<br>① 輸入員工工號（5 位數字）<br>② 輸入 ZERO ZERO 會員手機號碼<br>③ 輸入部門名稱 + 按下同意書按鈕<br><br>👉 請輸入您的員工工號（例：01234）</div>
+                  </div>
+                  <div class="row user"><div class="bubble user">01234</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-wrap">
+            <span class="duo-label">② 同意書卡</span>
+            <span class="shot-tag">畫面示意</span>
+            <img class="shot" alt="" hidden>
+            <div class="phone">
+              <div class="screen">
+                <div class="line-header">
+                  <span class="back">‹</span>
+                  <span class="oa-ava"><svg viewBox="0 0 100 100"><use href="#recycle"/></svg></span>
+                  <span class="oa-name">大豐環保 · 回收蒐集</span>
+                </div>
+                <div class="chat">
+                  <div class="sys-note">（前面已填：工號、手機、部門）</div>
+                  <div class="row bot">
+                    <span class="bot-ava"><svg viewBox="0 0 100 100"><use href="#recycle"/></svg></span>
+                    <div class="flex-card">
+                      <div class="fc-top">同意書</div>
+                      <div class="fc-body">本服務蒐集您提供的回收品照片與所填工號／ZERO ZERO 會員手機／部門，用於回收物辨識任務與獎勵發放。</div>
+                      <div class="fc-btns">
+                        <div class="fc-btn primary">我同意</div>
+                        <div class="fc-btn secondary">我不同意</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 6 · 核心操作流程（高信心 + 低信心修正 · 雙手機並排） ============ -->
+  <section class="slide mock">
+    <div class="head anim">
+      <span class="kicker"><span class="num">06</span>核心操作流程</span>
+      <h1 class="title">拍一張，<span class="hl">最快 20 秒入帳</span></h1>
+    </div>
+    <div class="body">
+      <div class="col grow anim note-panel" style="flex:0 0 38%">
+        <div class="flow vertical">
+          <div class="step"><div class="sn">1</div><div class="sh">聊天室拍照傳出</div><div class="sd">對著真實回收物拍一張</div></div>
+          <div class="step"><div class="sn">2</div><div class="sh">AI 判合規＋辨識品項</div><div class="sd">≤ 20 秒回覆</div></div>
+          <div class="step"><div class="sn">3</div><div class="sh">高信心：點「正確」→ +10z</div><div class="sd">低信心：AI 先問「這是【X】嗎？」你來拍板；辨識錯了打字修正</div></div>
+        </div>
+        <div class="pill-strong gold">屬於這一類就算對 → 點「正確」</div>
+      </div>
+      <!-- 雙手機並排：高信心 ack + 低信心確認 -->
+      <!-- SCREENSHOT-REPLACE: 對應 screenshot_checklist 03（高信心 ack）、04（低信心確認）、05（修正引導） -->
+      <div class="col grow anim">
+        <div class="duo">
+          <div class="phone-wrap">
+            <span class="duo-label">A · 高信心過審</span>
+            <img src="assets/shot_ack_high.png" alt="高信心 ack — 乾電池辨識為筒型電池" style="height:100%; max-width:100%; width:auto; display:block; border-radius:calc(var(--u)*2.2); box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) rgba(20,40,28,.22)">
+          </div>
+          <div class="phone-wrap">
+            <span class="duo-label">B · 低信心 + 打字修正</span>
+            <img src="assets/shot_correction.png" alt="低信心 → 修正流程 — 寶特瓶改為紙容器" style="height:100%; max-width:100%; width:auto; display:block; border-radius:calc(var(--u)*2.2); box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) rgba(20,40,28,.22)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 7 · 注意事項（三軸 + 三則拒絕 + duplicate） ============ -->
+  <section class="slide">
+    <svg class="deco"><use href="#recycle"/></svg>
+    <div class="head anim">
+      <span class="kicker"><span class="num">07</span>注意事項</span>
+      <h1 class="title">這幾種照片<span class="hl">會被擋下</span></h1>
+    </div>
+    <div class="body anim" style="flex-direction:column; gap:calc(var(--u)*2.2)">
+      <!-- 上半：三軸 -->
+      <div class="axes" style="flex:0 0 auto; height:auto">
+        <div class="axis">
+          <div class="aicon"><svg viewBox="0 0 100 100"><use href="#ic-catalog"/></svg></div>
+          <div class="atitle">不是實物</div>
+          <div class="atext">型錄、DM、網路圖 → 擋。要拍<b>實物本身</b>。</div>
+        </div>
+        <div class="axis">
+          <div class="aicon"><svg viewBox="0 0 100 100"><use href="#ic-rephoto"/></svg></div>
+          <div class="atitle">翻拍</div>
+          <div class="atext">拿手機拍螢幕、拍紙本 → 擋。請拿起實物再拍。</div>
+        </div>
+        <div class="axis">
+          <div class="aicon"><svg viewBox="0 0 100 100"><use href="#ic-blur"/></svg></div>
+          <div class="atitle">畫質不足</div>
+          <div class="atext">模糊、太暗、一張塞很多東西 → 擋。<b>亮一點、單一物品</b>。</div>
+        </div>
+      </div>
+      <!-- 下半：三則拒絕氣泡並排 -->
+      <!-- SCREENSHOT-REPLACE: 對應 screenshot_checklist 07（非實物）、08（翻拍）、09（畫質不足） -->
+      <div class="reject-row">
+        <div class="reject-card">
+          <div class="rt">非實物</div>
+          <div class="rb">❌ 這張不是回收品的實物照片（像型錄或網路圖片）。<br>請重拍實物本身，不要用印刷圖或截圖哦。</div>
+        </div>
+        <div class="reject-card">
+          <div class="rt">翻拍</div>
+          <div class="rb">❌ 這張看起來是翻拍螢幕或紙本的畫面，無法認定為實物。<br>請拿起實物本身再拍一張！</div>
+        </div>
+        <div class="reject-card">
+          <div class="rt">畫質不足</div>
+          <div class="rb">❌ 照片不夠清晰，畫面模糊或太暗。<br>請拍亮一點、單一物品，再試一次！</div>
+        </div>
+      </div>
+      <!-- 底部：duplicate 側註 -->
+      <div class="side-note">
+        <span style="font-size:calc(var(--fs-h3)*.85)">⚠️</span>
+        <span><b>同一張照片只算一次</b>：系統用全公司雜湊比對，重複傳會被硬擋、不計分不保存。但<b>兩位同事各自拍同一台實物</b>（例：同一台冰箱）OK — 那是我們要的多樣性。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 8 · 分格品項 + LIFF 查詢頁 ============ -->
+  <section class="slide mock">
+    <div class="head anim">
+      <span class="kicker"><span class="num">08</span>分格品項 &amp; LIFF 查詢頁</span>
+      <h1 class="title">分格＋<span class="hl">我的貢獻</span>／<span class="hl">全部品項</span></h1>
+    </div>
+    <div class="body">
+      <div class="col grow anim note-panel" style="flex:0 0 38%">
+        <div class="status-badge"><span class="live"></span>此功能已上線</div>
+        <ul class="list tight">
+          <li>159 個品項採<b>分格收集</b>（例：乾電池分筒型／方型）。</li>
+          <li>某一格收滿 → 新照片<b>不計獎勵</b>，但<b>照片會保留</b>。</li>
+          <li>覺得判錯格 → 點「申訴」→ 人工複核成立<b>補發獎勵</b>。</li>
+          <li>LIFF 查詢頁<b>只查不上傳</b>，拍照一律走 LINE 聊天室。</li>
+        </ul>
+      </div>
+      <!-- 雙手機並排：LIFF 我的貢獻 + 全部品項 -->
+      <!-- SCREENSHOT-REPLACE: 對應 screenshot_checklist 11（LIFF 我的貢獻）、12（全部品項） -->
+      <div class="col grow anim">
+        <div class="duo">
+          <div class="phone-wrap">
+            <span class="duo-label">A · 我的貢獻</span>
+            <img src="assets/shot_liff_me.png" alt="LIFF 我的貢獻 — 張過審 + Z 幣餘額" style="height:100%; max-width:100%; width:auto; display:block; border-radius:calc(var(--u)*2.2); box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) rgba(20,40,28,.22)">
+          </div>
+          <div class="phone-wrap">
+            <span class="duo-label">B · 全部品項</span>
+            <img src="assets/shot_liff_tasks.png" alt="LIFF 全部品項 — 缺口列表 + 只看缺口" style="height:100%; max-width:100%; width:auto; display:block; border-radius:calc(var(--u)*2.2); box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) rgba(20,40,28,.22)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 9 · 拍照訣竅（好 vs 壞照片，AI 圖） ============ -->
+  <section class="slide">
+    <svg class="deco"><use href="#leaf"/></svg>
+    <div class="head anim">
+      <span class="kicker"><span class="num">09</span>拍照訣竅</span>
+      <h1 class="title">拍得過審的<span class="hl">小訣竅</span></h1>
+    </div>
+    <div class="body">
+      <div class="col grow anim" style="justify-content:center">
+        <ul class="list">
+          <li>光線<b>亮一點</b>（太暗會被判畫質不足）。</li>
+          <li><b>靠近一點</b>、<b>一次拍一件</b>（多物件混雜會被擋）。</li>
+          <li>拍<b>實物本人</b>，不要翻拍螢幕／型錄。</li>
+          <li>拍<b>今天最缺的品項</b>：ack 卡與「全部品項」頁都會提示缺口。</li>
+        </ul>
+      </div>
+      <div class="col grow anim" style="flex:0 0 40%; justify-content:center; gap:calc(var(--u)*2)">
+        <div class="ai-img" style="height:44%">
+          <img src="assets/tip_good.png" alt="好照片示意" onerror="this.style.display='none'; this.parentElement.classList.add('pending'); this.parentElement.innerHTML='<div class=&quot;pi&quot;>好照片 ✓</div><div class=&quot;pt&quot;>[assets/tip_good.png 待產出<br>codex-image 生成中]</div>';">
+          <div class="ai-cap">好照片 ✓</div>
+        </div>
+        <div class="ai-img" style="height:44%; border-color:rgba(190,63,53,.4)">
+          <img src="assets/tip_bad.png" alt="壞照片示意" onerror="this.style.display='none'; this.parentElement.classList.add('pending'); this.parentElement.style.borderColor='var(--danger)'; this.parentElement.style.color='var(--danger)'; this.parentElement.innerHTML='<div class=&quot;pi&quot;>壞照片 ✗</div><div class=&quot;pt&quot; style=&quot;color:var(--ink-soft)&quot;>[assets/tip_bad.png 待產出<br>codex-image 生成中]</div>';">
+          <div class="ai-cap bad">壞照片 ✗</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 頁 10 · 封底 CTA ============ -->
+  <section class="slide closing">
+    <svg class="deco"><use href="#recycle"/></svg>
+    <div class="cover-grid">
+      <div class="col grow">
+        <h1 class="anim">現在就加好友，<br>開始拍第一張</h1>
+        <div class="cl-sub anim">即日起 – 2026/07/31（第一波抽獎截止）</div>
+        <div class="cl-steps anim">
+          <span class="cl-step"><span class="n">1</span>掃 QR 加 LINE 好友</span>
+          <span class="cl-step"><span class="n">2</span>完成註冊</span>
+          <span class="cl-step"><span class="n">3</span>拍第一張</span>
+        </div>
+        <div class="anim chips" style="margin-top:calc(var(--u)*3)">
+          <span class="chip gold">每 10 張過審 +1 張抽獎券</span>
+          <span class="chip gold">加碼抽獎 · 總獎金 3.4 萬</span>
+          <span class="chip">8 月上旬開獎</span>
+        </div>
+      </div>
+      <div class="cover-visual anim" style="flex-direction:column; gap:calc(var(--u)*2); align-items:center">
+        <div style="width:72%; background:#fff; border-radius:calc(var(--u)*1); padding:calc(var(--u)*1.4); box-shadow:0 calc(var(--u)*0.6) calc(var(--u)*2) rgba(20,50,35,.1)">
+          <img src="assets/line_qr.png" alt="LINE@ 加好友 QR" style="width:100%; height:auto; display:block">
+          <div style="text-align:center; font-size:var(--fs-body); font-weight:800; color:var(--green-700); margin-top:calc(var(--u)*0.8)">掃碼加 LINE 好友</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /deck -->
+</div><!-- /stage -->
+
+<!-- HUD -->
+<div class="hud rail"><div class="fill" id="railFill"></div></div>
+<div class="hud indicator"><span id="pageNow">1</span> / <span id="pageTotal">10</span></div>
+<div class="hud nav-btns">
+  <button class="nav-btn" id="prevBtn" aria-label="上一頁">‹</button>
+  <button class="nav-btn" id="nextBtn" aria-label="下一頁">›</button>
+</div>
+<div class="hud hint" id="hint">← → 翻頁 · 點畫面前進</div>
+
+<script>
+(function(){
+  "use strict";
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var i = 0;
+  var railFill = document.getElementById('railFill');
+  var pageNow = document.getElementById('pageNow');
+  var hint = document.getElementById('hint');
+  document.getElementById('pageTotal').textContent = total;
+
+  function show(n){
+    i = Math.max(0, Math.min(total - 1, n));
+    slides.forEach(function(s, idx){ s.classList.toggle('active', idx === i); });
+    pageNow.textContent = (i + 1);
+    railFill.style.width = ((i + 1) / total * 100) + '%';
+  }
+  function next(){ if (i < total - 1) show(i + 1); }
+  function prev(){ if (i > 0) show(i - 1); }
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(total - 1); }
+    if (hint) { hint.style.display = 'none'; }
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', function(e){ e.stopPropagation(); next(); });
+  document.getElementById('prevBtn').addEventListener('click', function(e){ e.stopPropagation(); prev(); });
+
+  // 點畫面翻頁：左 22% 往前，其餘往後
+  document.querySelector('.stage').addEventListener('click', function(e){
+    var x = e.clientX / window.innerWidth;
+    if (x < 0.22) { prev(); } else { next(); }
+    if (hint) { hint.style.display = 'none'; }
+  });
+
+  show(0);
+})();
+</script>
+</body>
+</html>
